@@ -32,7 +32,7 @@ https://github.com/noahgsolomon/brainrot.js/assets/111200060/db1e60c4-2db9-48c5-
 
 #### assets to download
 
-put these assets in public/generate/background with the same name they have:
+put these assets in generate/background with the same name they have:
 https://brainrotbackground.s3.amazonaws.com/GTA-1.mp4
 https://brainrotbackground.s3.amazonaws.com/GTA-2.mp4
 https://brainrotbackground.s3.amazonaws.com/GTA-3.mp4

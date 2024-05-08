@@ -66,14 +66,14 @@ export async function generateTranscriptAudio(
 			person === 'JOE_ROGAN'
 				? process.env.JOE_ROGAN_VOICE_ID
 				: person === 'BARACK_OBAMA'
-				? process.env.BARACK_OBAMA_VOICE_ID
-				: person === 'BEN_SHAPIRO'
-				? process.env.BEN_SHAPIRO_VOICE_ID
-				: person === 'RICK_SANCHEZ'
-				? process.env.RICK_SANCHEZ_VOICE_ID
-				: person === 'DONALD_TRUMP'
-				? process.env.DONALD_TRUMP_VOICE_ID
-				: process.env.JORDAN_PETERSON_VOICE_ID;
+					? process.env.BARACK_OBAMA_VOICE_ID
+					: person === 'BEN_SHAPIRO'
+						? process.env.BEN_SHAPIRO_VOICE_ID
+						: person === 'RICK_SANCHEZ'
+							? process.env.RICK_SANCHEZ_VOICE_ID
+							: person === 'DONALD_TRUMP'
+								? process.env.DONALD_TRUMP_VOICE_ID
+								: process.env.JORDAN_PETERSON_VOICE_ID;
 
 		await generateAudio(voice_id, person, line, i);
 		audios.push({
@@ -89,27 +89,29 @@ export async function generateTranscriptAudio(
 
 	const initialAgentName = audios[0].person;
 
+
+	// PAY ATTENTION TO THIS
+
+	const videoIndex = Math.floor(Math.random() * fs.readdirSync('background').filter((element) => element.startsWith(background + '-')).length)
+
 	const contextContent = `
 import { staticFile } from 'remotion';
 
-export const music: string = ${
-		music === 'NONE' ? `'NONE'` : `'/music/${music}.MP3'`
-	};
+export const music: string = ${music === `'/music/${music}.MP3'`
+		};
 export const fps = ${fps};
 export const initialAgentName = '${initialAgentName}';
-export const videoFileName = '/background/${background}-' + ${Math.floor(
-		Math.random() * 10
-	)} + '.mp4';
+export const videoFileName = '/background/${background}-' + ${videoIndex} + '.mp4';
 export const subtitlesFileName = [
   ${audios
-		.map(
-			(entry, i) => `{
+			.map(
+				(entry, i) => `{
     name: '${entry.person}',
     file: staticFile('srt/${entry.person}-${i}.srt'),
     asset: '${entry.image}',
   }`
-		)
-		.join(',\n  ')}
+			)
+			.join(',\n  ')}
 ];
 `;
 
@@ -172,8 +174,7 @@ async function fetchValidImages(transcript, length, ai, duration) {
 			const imageFetch = await fetch(
 				`https://www.googleapis.com/customsearch/v1?q=${encodeURI(
 					transcript[i].asset
-				)}&cx=${process.env.GOOGLE_CX}&searchType=image&key=${
-					process.env.GOOGLE_API_KEY
+				)}&cx=${process.env.GOOGLE_CX}&searchType=image&key=${process.env.GOOGLE_API_KEY
 				}&num=${4}`,
 				{
 					method: 'GET',

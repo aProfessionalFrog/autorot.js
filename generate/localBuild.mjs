@@ -45,6 +45,12 @@ const backgrounds = [
 
 ]
 
+const musics = [
+	'FLUFFING_A_DUCK',
+	'MONKEYS_SPINNING_MONKEYS',
+	'WII_SHOP_CHANNEL_TRAP'
+]
+
 const local = true;
 
 async function main() {
@@ -61,16 +67,16 @@ async function main() {
 	const agentB = agents[agentBIndex];
 
 	const aiGeneratedImages = true;
-	const fps = 60;
+	const fps = 30;
 	const duration = 1; //minute
 	//MINECRAFT or TRUCK or GTA
 	const background = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-	const music = 'NONE';
+	const music = musics[Math.floor(Math.random() * musics.length)];
 	const cleanSrt = true;
 
 	await transcribeFunction(
 		local,
-		videoTopic ? videoTopic : randomTopic,
+		videoTopic,
 		agentA,
 		agentB,
 		aiGeneratedImages,
