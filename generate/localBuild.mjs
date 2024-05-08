@@ -48,17 +48,6 @@ const backgrounds = [
 const local = true;
 
 async function main() {
-	/* const videoTopic = await fetch('http://127.0.0.1:11434/api/generate', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-		body: {
-			'model': 'qwen:0.5b',
-			'prompt': 'Write one topic that could be talked about for one minute in the form of a JSON object, in the format "topic": "the idea that you have"',
-			'stream': false
-		}
-	}); */
 	if (topics.length == 0) {
 		await generateTopics();
 	}
@@ -110,7 +99,7 @@ async function generateTopics() {
 		messages: [
 			{
 				role: 'system',
-				content: 'Generate a JSON array of completely random ideas for interesting educational conversation topics.',
+				content: 'Generate a JSON object of completely random ideas for interesting educational conversation topics in the form of "title of idea":"detailed one sentence explanation of idea"',
 			}
 		],
 		response_format: { type: 'json_object' },
@@ -121,11 +110,9 @@ async function generateTopics() {
 		stop: null,
 		stream: false,
 	});
-
-	const content = completion.choices[0]?.message?.content || '';
-	console.log(content);
-	completion.choices[0]?.message?.content.forEach(element => {
-		topics.push(element);
+	const content = JSON.parse(completion.choices[0]?.message?.content || '');
+	Object.keys(content).forEach(element => {
+		topics.push(content[element]);
 	});
 }
 

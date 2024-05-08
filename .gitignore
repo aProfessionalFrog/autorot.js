@@ -9,13 +9,13 @@ package-lock.json
 # testing
 /coverage
 query.sql
+generate/test.mjs
 
-/src/env.mjs 
+/src/env.mjs
 # next.js
 /.next/
 /out/
 .next/
-
 
 # production
 /build
@@ -25,11 +25,9 @@ query.sql
 /public/sw.js.map
 /public/workbox-*.js
 
-
 # misc
 .DS_Store
 *.pem
-
 
 # debug
 npm-debug.log*
