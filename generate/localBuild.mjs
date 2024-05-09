@@ -89,10 +89,7 @@ async function main() {
 		cleanSrt,
 	);
 
-	let videoID = "";
-	for (let i = 0; i < 10; i++) {
-		videoID += Math.floor(Math.random() * 10);
-	}
+	const videoID = "" + Math.floor(Math.random() * 100000000);
 
 	// run in the command line `npm run build`
 	exec(`npm run build out/${videoID}.mp4`, async (error, stdout, stderr) => {
@@ -118,7 +115,7 @@ async function generateTopics() {
 		],
 		response_format: { type: 'json_object' },
 		model: 'llama3-70b-8192',
-		temperature: 0.5,
+		temperature: 0.5, //temperatures above 1 sometimes fail to generate a valid JSON object
 		max_tokens: 4096,
 		top_p: 1,
 		stop: null,
