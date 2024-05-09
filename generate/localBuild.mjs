@@ -1,9 +1,11 @@
 import transcribeFunction from './transcribe.mjs';
 import path from 'path';
 import { exec } from 'child_process';
+import { postVideo } from './postVideo.mjs';
 import { topics } from './topics.mjs';
 import { rm, mkdir, unlink } from 'fs/promises';
 import Groq from 'groq-sdk/index.mjs';
+import { random } from 'remotion';
 
 export const PROCESS_ID = 0;
 
@@ -57,7 +59,7 @@ async function main() {
 	if (topics.length == 0) {
 		await generateTopics();
 	}
-	const videoTopic = topics[topics.pop()];
+	const videoTopic = topics.pop();
 	let agentAIndex = Math.floor(Math.random() * agents.length);
 	let agentBIndex;
 	do {
@@ -76,7 +78,7 @@ async function main() {
 
 	await transcribeFunction(
 		local,
-		videoTopic,
+		videoTopic['topic'],
 		agentA,
 		agentB,
 		aiGeneratedImages,
@@ -84,11 +86,16 @@ async function main() {
 		duration,
 		background,
 		music,
-		cleanSrt
+		cleanSrt,
 	);
 
+	let videoID = "";
+	for (let i = 0; i < 10; i++) {
+		videoID += Math.floor(Math.random() * 10);
+	}
+
 	// run in the command line `npm run build`
-	exec('npm run build', async (error, stdout, stderr) => {
+	exec(`npm run build out/${videoID}.mp4`, async (error, stdout, stderr) => {
 		if (error) {
 			console.error(`exec error: ${error}`);
 			return;
@@ -97,6 +104,7 @@ async function main() {
 		console.error(`stderr: ${stderr}`);
 
 		cleanupResources();
+		postVideo(videoID, videoTopic['title']);
 	});
 }
 
@@ -105,7 +113,7 @@ async function generateTopics() {
 		messages: [
 			{
 				role: 'system',
-				content: 'Generate a JSON object of completely random ideas for interesting educational conversation topics in the form of "title of idea":"detailed one sentence explanation of idea"',
+				content: 'Generate a JSON object of completely random ideas for interesting educational conversation topics in the form of {"title of idea":"detailed one-sentence explanation of idea"}',
 			}
 		],
 		response_format: { type: 'json_object' },
@@ -118,7 +126,10 @@ async function generateTopics() {
 	});
 	const content = JSON.parse(completion.choices[0]?.message?.content || '');
 	Object.keys(content).forEach(element => {
-		topics.push(content[element]);
+		topics.push({
+			'title': element,
+			'topic': content[element]
+		});
 	});
 }
 
