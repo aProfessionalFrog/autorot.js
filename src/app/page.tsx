@@ -146,6 +146,7 @@ export default function Home({
                 alt="Brainrot&#0046;js - Rot&#0032;your&#0032;brain&#0032;one&#0032;AI&#0032;generated&#0032;video&#0032;at&#0032;a&#0032;time&#0046; | Product Hunt"
               />
             </Link> */}
+
             <Image
               src={"https://images.smart.wtf/brainrot.png"}
               width={200}
@@ -153,7 +154,6 @@ export default function Home({
               alt="brainrot"
               className="cursor-pointer rounded-full border-[10px] border-card shadow-lg transition-all hover:scale-[101%] active:scale-[99%] dark:border-primary"
             />
-
             <div className=" flex flex-col items-center gap-2">
               <Badge
                 className="cursor-pointer text-sm md:hidden"
@@ -199,18 +199,17 @@ export default function Home({
                   </Link>
                 </Badge>
               </h1>
-
               <p className="max-w-[30ch] text-sm italic">
                 <Link
                   href={"https://github.com/noahgsolomon/brainrot.js"}
                   className="flex flex-col items-center gap-1 font-bold "
                 >
                   now open source!
-                  {/* <div className="flex flex-row items-center gap-2 underline transition-all hover:text-primary/80">
+                  <div className="flex flex-row items-center gap-2 underline transition-all hover:text-primary/80">
                     <Star className="size-3 fill-yellow-500 text-yellow-400" />
                     star on github{" "}
                     <Star className="size-3 fill-yellow-500 text-yellow-400" />
-                  </div> */}
+                  </div>
                 </Link>
               </p>
             </div>
@@ -315,7 +314,7 @@ export default function Home({
             ) : null}
           </div>
         </div>
-        <p className="max-w-[300px] pt-12 text-center italic">
+        {/* <p className="max-w-[300px] pt-12 text-center italic">
           To anyone who supports us on{" "}
           <Link
             target="_blank"
@@ -325,7 +324,7 @@ export default function Home({
             Product Hunt
           </Link>
           ... I will kiss u fr 😽
-        </p>
+        </p> */}
         <div className="pt-48">
           <p className="text-center text-3xl font-bold">Recent Generations</p>
           <div className="mx-auto flex max-w-[80%] flex-col items-center justify-center gap-4 md:max-w-[1200px] md:flex-row md:flex-wrap">
