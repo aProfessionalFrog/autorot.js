@@ -32,6 +32,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import ProductHuntIcon from "@/components/svg/ProductHuntIcon";
+import ProButton from "./ProButton";
 
 export default function Home({
   searchParams,
@@ -213,7 +214,7 @@ export default function Home({
                 </Link>
               </p>
             </div>
-            {pendingVideo && placeInQueue >= 1 ? (
+            {pendingVideo && placeInQueue >= 1 && progress === 0 ? (
               <div className="flex max-w-[300px] flex-col gap-4 rounded-lg border border-border bg-card/80 p-4 text-center text-sm shadow-sm">
                 <div>
                   Sorry for the long ass queue bro 🤕. If you want to run
@@ -226,7 +227,7 @@ export default function Home({
                     here!
                   </Link>
                 </div>
-                {/* {!userDB?.user?.subscribed ? (
+                {!userDB?.user?.subscribed ? (
                   <p className="flex flex-col items-center gap-2">
                     Want to skip the queue?{" "}
                     <Link
@@ -241,7 +242,23 @@ export default function Home({
                       GO PRO <Crown className="size-4" />
                     </Link>
                   </p>
-                ) : null} */}
+                ) : null}
+              </div>
+            ) : null}
+            {!userDB?.user?.subscribed &&
+            userDB?.user?.credits === 0 &&
+            !pendingVideo ? (
+              <div className="rounded-lg border border-destructive bg-destructive/60 p-4 text-sm text-secondary shadow-sm dark:text-primary">
+                You are all out of credits 😥...{" "}
+                <ProButton>
+                  <Button
+                    className="p-0 text-secondary underline dark:text-primary"
+                    variant={"link"}
+                  >
+                    subscribe
+                  </Button>
+                </ProButton>
+                to get more (250 credits)
               </div>
             ) : null}
             {pendingVideo && (
@@ -258,7 +275,10 @@ export default function Home({
                 </div>
                 <div>
                   <span className="font-bold">Est. time remaining: </span>{" "}
-                  {(placeInQueue * 3 + ((100 - progress) / 100) * 3).toFixed(2)}{" "}
+                  {(progress > 0
+                    ? 0
+                    : placeInQueue * 4 + ((100 - progress) / 100) * 4
+                  ).toFixed(2)}{" "}
                   mins
                 </div>
 
@@ -280,6 +300,16 @@ export default function Home({
             >
               <Wand className="h-4 w-4" /> Create Video
             </Button>
+            {userDB?.user?.id && !userDB?.user?.subscribed ? (
+              <ProButton>
+                <Button
+                  className={"flex w-full flex-row items-center gap-2"}
+                  variant={"gold"}
+                >
+                  GO PRO <Crown className="size-4" />
+                </Button>
+              </ProButton>
+            ) : null}
             {pendingVideo ? (
               <Button
                 className="flex flex-row items-center gap-2 border border-red-500/60 bg-red-500/20"
@@ -329,12 +359,9 @@ export default function Home({
         <div className="pt-48">
           <p className="text-center text-3xl font-bold">Recent Generations</p>
           <div className="mx-auto flex max-w-[80%] flex-col items-center justify-center gap-4 md:max-w-[1200px] md:flex-row md:flex-wrap">
-            <Tweet id="1780025664608821715" />
-            <Tweet id="1779908542306345061" />
-            <Tweet id="1778059188742099419" />
-            <Tweet id="1777944936874393936" />
-            <Tweet id="1778012232250532213" />
-            <Tweet id="1777789848645959783" />
+            <Tweet id="1787633614835843302" />
+            <Tweet id="1787434978780819569" />
+            <Tweet id="1786844526646063208" />
           </div>
         </div>
       </main>
