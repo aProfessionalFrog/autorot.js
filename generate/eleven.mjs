@@ -92,7 +92,7 @@ export async function generateTranscriptAudio(
 
 	// PAY ATTENTION TO THIS
 
-	const videoIndex = Math.floor(Math.random() * fs.readdirSync('background').filter((element) => element.startsWith(background + '-')).length)
+	const videoIndex = Math.floor(Math.random() * fs.readdirSync('background').filter((element) => element.startsWith(background + '-')).length) + 1;
 
 	const contextContent = `
 import { staticFile } from 'remotion';
