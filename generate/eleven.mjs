@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import transcriptFunction from './transcript.mjs';
 import { writeFile } from 'fs/promises';
 import { query } from './dbClient.mjs';
+import exec from 'await-exec';
 
 dotenv.config();
 
@@ -121,6 +122,10 @@ export const subtitlesFileName = [
 }
 
 export async function generateAudio(voice_id, person, line, index) {
+	await exec(`echo '${line}' | piper --model en_US-lessac-medium --output_file public/voice/${person}-${index}.mp3`);
+}
+
+/*export async function generateAudio(voice_id, person, line, index) {
 	const response = await fetch(
 		`https://api.elevenlabs.io/v1/text-to-speech/${voice_id}`,
 		{
@@ -155,7 +160,7 @@ export async function generateAudio(voice_id, person, line, index) {
 		});
 		audioStream.on('error', reject);
 	});
-}
+}*/
 
 async function fetchValidImages(transcript, length, ai, duration) {
 	if (ai && duration === 1) {
