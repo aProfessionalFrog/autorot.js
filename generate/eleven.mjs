@@ -187,20 +187,40 @@ async function fetchValidImages(transcript, length, ai, duration) {
 				}
 			);
 			const imageResponse = await imageFetch.json();
-			if (!imageResponse.items || imageResponse.items.length === 0) {
+
+			// Check if the response contains 'items' and they are iterable
+			if (
+				!Array.isArray(imageResponse.items) ||
+				imageResponse.items.length === 0
+			) {
+				console.log(
+					'No images found or items not iterable',
+					imageResponse.items
+				);
 				images.push({ link: 'https://images.smart.wtf/black.png' });
+				continue; // Skip to the next iteration
 			}
+
 			const validMimeTypes = ['image/png', 'image/jpeg'];
+			let imageAdded = false;
+
 			for (let image of imageResponse.items) {
 				if (validMimeTypes.includes(image.mime)) {
 					const isViewable = await checkImageHeaders(image.link);
 					if (isViewable) {
 						images.push(image);
-						break;
+						imageAdded = true;
+						break; // Stop after adding one valid image
 					}
 				}
 			}
+
+			// If no valid images were added, push a default image
+			if (!imageAdded) {
+				images.push({ link: 'https://images.smart.wtf/black.png' });
+			}
 		}
+
 		return images;
 	}
 }
