@@ -1,44 +1,43 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useCreateVideo } from "./usecreatevideo";
 import { useYourVideos } from "./useyourvideos";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Crown, Folder, Github, Loader2, Wand, X } from "lucide-react";
+import {
+  Coins,
+  Crown,
+  Folder,
+  Gem,
+  Github,
+  HeartCrack,
+  Loader2,
+  Star,
+  StarIcon,
+  Wand,
+  X,
+} from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { trpc } from "@/trpc/client";
 import Link from "next/link";
+import { Tweet } from "react-tweet";
+import XIcon from "@/components/svg/XIcon";
 import Credits from "./credits";
+import { subscribe } from "diagnostics_channel";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
+import ProductHuntIcon from "@/components/svg/ProductHuntIcon";
 import ProButton from "./ProButton";
-import NumberTicker from "@/components/magicui/number-ticker";
-import { useGenerationType } from "./usegenerationtype";
-import ClientTweetCard from "@/components/magicui/client-tweet-card";
 
 export default function Home({
   searchParams,
 }: {
-  searchParams: {
-    error?: string;
-    loggedIn?: string;
-    subscribed?: string;
-    // all for create video
-    agent1Id?: string;
-    agent2Id?: string;
-    agent1Name?: string;
-    agent2Name?: string;
-    title?: string;
-    credits?: string;
-    music?: string;
-    background?: string;
-    assetType?: string;
-    duration?: string;
-    fps?: string;
-  };
+  searchParams: { loggedIn?: string; subscribed?: string };
 }) {
   const user = useUser();
   const router = useRouter();
@@ -47,71 +46,6 @@ export default function Home({
     toast.success("🎉 welcome to the family");
     router.push("/");
   }
-  if (searchParams.error === "true") {
-    toast.error("Error. Please try again.");
-    router.push("/");
-  }
-
-  const { setIsOpen: setIsGenerationTypeOpen, setVideoDetails } =
-    useGenerationType();
-
-  useEffect(() => {
-    console.log(searchParams);
-
-    if (
-      searchParams.agent1Id &&
-      searchParams.agent2Id &&
-      searchParams.agent1Name &&
-      searchParams.agent2Name &&
-      searchParams.title &&
-      searchParams.credits &&
-      searchParams.fps
-    ) {
-      setVideoDetails({
-        brainrot: {
-          agents: [
-            {
-              id: parseInt(searchParams.agent1Id),
-              name: searchParams.agent1Name as
-                | "JORDAN_PETERSON"
-                | "BEN_SHAPIRO"
-                | "JOE_ROGAN"
-                | "BARACK_OBAMA"
-                | "DONALD_TRUMP"
-                | "MARK_ZUCKERBERG"
-                | "LIL_YACHTY"
-                | "JOE_BIDEN",
-            },
-            {
-              id: parseInt(searchParams.agent2Id),
-              name: searchParams.agent2Name as
-                | "JORDAN_PETERSON"
-                | "BEN_SHAPIRO"
-                | "JOE_ROGAN"
-                | "BARACK_OBAMA"
-                | "DONALD_TRUMP"
-                | "MARK_ZUCKERBERG"
-                | "LIL_YACHTY"
-                | "JOE_BIDEN",
-            },
-          ],
-          assetType: searchParams.assetType ?? "GOOGLE",
-          background: searchParams?.background ?? "MINECRAFT",
-          cost: parseInt(searchParams.credits),
-          duration: searchParams?.duration
-            ? parseInt(searchParams?.duration)
-            : 1,
-          fps: parseInt(searchParams.fps),
-          music: searchParams.music ?? "NONE",
-          title: searchParams.title,
-          // not used in this case
-          remainingCredits: 0,
-        },
-        math: {},
-      });
-      setIsGenerationTypeOpen(true);
-    }
-  }, [searchParams]);
 
   const userDB = trpc.user.user.useQuery().data;
 
@@ -196,8 +130,8 @@ export default function Home({
 
   return (
     <>
-      <main className="relative flex flex-col items-center justify-center gap-4">
-        <div className="mt-[100px] flex w-[90%] flex-col items-center justify-center bg-opacity-60 pb-8 text-4xl lg:w-[80%] xl:w-[75%]">
+      <main className="relative mt-6 flex flex-col items-center justify-center gap-4">
+        <div className="mt-[100px] flex w-[90%] flex-col items-center justify-center bg-opacity-60 text-4xl lg:w-[80%] xl:w-[75%]">
           <div className="flex flex-col items-center justify-center gap-8 pb-8">
             {/* <div className="coarse:hidden">
             <FlyingGifs gifs={gifs} />
@@ -213,92 +147,120 @@ export default function Home({
                 alt="Brainrot&#0046;js - Rot&#0032;your&#0032;brain&#0032;one&#0032;AI&#0032;generated&#0032;video&#0032;at&#0032;a&#0032;time&#0046; | Product Hunt"
               />
             </Link> */}
-            {/* <Link
-              href={"https://github.com/noahgsolomon/brainrot.js"}
-              target="_blank"
-            >
-              <AnimatedGradientText className="cursor-pointer">
-                ⭐ <hr className="mx-2 h-4 w-[1px] shrink-0 bg-gray-300" />{" "}
-                <span
-                  className={cn(
-                    `inline animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent`,
-                  )}
-                >
-                  Star on GitHub
-                </span>
-              </AnimatedGradientText>
-            </Link> */}
 
             <Image
               src={"https://images.smart.wtf/brainrot.png"}
               width={200}
               height={200}
               alt="brainrot"
-              className="h-[200px] w-[200px] cursor-pointer rounded-full border-[10px] border-card shadow-lg transition-all hover:scale-[101%] active:scale-[99%] dark:border-primary coarse:h-[150px] coarse:w-[150px] coarse:border-[5px]"
+              className="cursor-pointer rounded-full border-[10px] border-card shadow-lg transition-all hover:scale-[101%] active:scale-[99%] dark:border-primary"
             />
-
             <div className=" flex flex-col items-center gap-2">
-              <div>
-                <h1 className="relative max-w-[10ch] text-center text-5xl font-bold lg:text-6xl">
-                  BRAINROT.JS
-                </h1>
-                <p className="flex w-full flex-row items-center justify-center gap-1 p-2 text-base font-normal italic">
-                  <NumberTicker value={7543} /> videos generated 💀
-                </p>
-              </div>
+              <Badge
+                className="cursor-pointer text-sm md:hidden"
+                variant={userDB?.user?.subscribed ? "hard" : "blue"}
+              >
+                <Link
+                  target="_blank"
+                  className="flex flex-row items-center gap-2"
+                  href={"https://github.com/noahgsolomon/brainrot.js"}
+                >
+                  {userDB?.user?.subscribed ? (
+                    <>
+                      PRO <Gem className="size-4  fill-teal-500" />
+                    </>
+                  ) : (
+                    <>
+                      Free Mode <HeartCrack className="size-4 fill-red-500" />
+                    </>
+                  )}
+                </Link>
+              </Badge>
 
+              <h1 className="relative max-w-[10ch] text-center text-5xl font-bold lg:text-6xl">
+                BRAINROT.JS
+                <Badge
+                  className="absolute -top-8 hidden cursor-pointer text-sm md:-right-12 md:block"
+                  variant={userDB?.user?.subscribed ? "hard" : "blue"}
+                >
+                  <Link
+                    className="flex flex-row items-center gap-2"
+                    target="_blank"
+                    href={"https://github.com/noahgsolomon/brainrot.js"}
+                  >
+                    {userDB?.user?.subscribed ? (
+                      <>
+                        PRO <Gem className="size-4  fill-teal-500" />
+                      </>
+                    ) : (
+                      <>
+                        Free Mode <HeartCrack className="size-4 fill-red-500" />
+                      </>
+                    )}
+                  </Link>
+                </Badge>
+              </h1>
               <p className="max-w-[30ch] text-sm italic">
                 <Link
                   href={"https://github.com/noahgsolomon/brainrot.js"}
-                  className="flex flex-col items-center gap-1 font-bold underline "
+                  className="flex flex-col items-center gap-1 font-bold "
                 >
-                  now open source!{" "}
+                  now open source!
+                  <div className="flex flex-row items-center gap-2 underline transition-all hover:text-primary/80">
+                    <Star className="size-3 fill-yellow-500 text-yellow-400" />
+                    star on github{" "}
+                    <Star className="size-3 fill-yellow-500 text-yellow-400" />
+                  </div>
                 </Link>
               </p>
             </div>
-            {userDB?.user &&
-            !userDB?.user?.subscribed &&
-            (userDB?.user?.credits ?? 0) <= 0 &&
-            !pendingVideo ? (
-              <div className="flex max-w-[300px] flex-col gap-0 rounded-lg border border-border bg-card/80 p-4 text-center text-sm shadow-sm">
-                <div className="flex flex-col gap-2 font-bold">
-                  <div className="flex flex-col gap-1">
-                    {" "}
-                    go pro to generate videos!
-                    <span className="text-xs font-normal italic">
-                      (and to support me 🥹🫶)
-                    </span>
-                  </div>
-
-                  <ProButton>
-                    <Button
-                      data-action="subscribe"
-                      className={"flex w-full flex-row items-center gap-2"}
-                      variant={"red"}
+            {pendingVideo && placeInQueue >= 1 && progress === 0 ? (
+              <div className="flex max-w-[300px] flex-col gap-4 rounded-lg border border-border bg-card/80 p-4 text-center text-sm shadow-sm">
+                <div>
+                  Sorry for the long ass queue bro 🤕. If you want to run
+                  locally check{" "}
+                  <Link
+                    href="https://github.com/noahgsolomon/brainrot.js"
+                    target="_blank"
+                    className="font-bold underline"
+                  >
+                    here!
+                  </Link>
+                </div>
+                {!userDB?.user?.subscribed ? (
+                  <p className="flex flex-col items-center gap-2">
+                    Want to skip the queue?{" "}
+                    <Link
+                      onClick={() => setIsOpen(false)}
+                      href={"/pricing"}
+                      className={buttonVariants({
+                        className: "flex flex-row items-center gap-2 ",
+                        variant: "gold",
+                        size: "sm",
+                      })}
                     >
                       GO PRO <Crown className="size-4" />
-                    </Button>
-                  </ProButton>
-                </div>
+                    </Link>
+                  </p>
+                ) : null}
               </div>
             ) : null}
-
-            {/* {!userDB?.user?.subscribed ? (
-                <p className="flex flex-col items-center gap-2">
-                  Want to skip the queue?{" "}
-                  <Link
-                    onClick={() => setIsOpen(false)}
-                    href={"/pricing"}
-                    className={buttonVariants({
-                      className: "flex flex-row items-center gap-2 ",
-                      variant: "gold",
-                      size: "sm",
-                    })}
+            {!userDB?.user?.subscribed &&
+            userDB?.user?.credits === 0 &&
+            !pendingVideo ? (
+              <div className="rounded-lg border border-destructive bg-destructive/60 p-4 text-sm text-secondary shadow-sm dark:text-primary">
+                You are all out of credits 😥...{" "}
+                <ProButton>
+                  <Button
+                    className="p-0 text-secondary underline dark:text-primary"
+                    variant={"link"}
                   >
-                    GO PRO <Crown className="size-4" />
-                  </Link>
-                </p>
-              ) : null} */}
+                    subscribe
+                  </Button>
+                </ProButton>
+                to get more (250 credits)
+              </div>
+            ) : null}
             {pendingVideo && (
               <div className=" flex flex-col items-center gap-2 rounded-lg border border-border bg-card/80 p-4 text-sm shadow-sm">
                 <div className="flex flex-row items-center gap-2">
@@ -331,7 +293,6 @@ export default function Home({
             <Button
               className="flex flex-row items-center gap-2"
               variant={"brain"}
-              size={"lg"}
               disabled={pendingVideo}
               onClick={() => {
                 setIsOpen(true);
@@ -339,37 +300,19 @@ export default function Home({
             >
               <Wand className="h-4 w-4" /> Create Video
             </Button>
-            <Link
-              href={"https://github.com/noahgsolomon/brainrot.js"}
-              target="_blank"
-              className={buttonVariants({
-                className: "flex flex-row items-center gap-2",
-                size: "lg",
-                variant: "outline",
-              })}
-            >
-              <Github className="h-4 w-4" />
-              Run Locally
-            </Link>
-            {/* <Link
-              href={"/watch"}
-              className={buttonVariants({
-                variant: "outline",
-                className: "relative flex flex-row items-center gap-2",
-              })}
-            >
-              <Eye className="size-4" /> Watch
-              <Badge
-                className="absolute -right-3 -top-[0.4rem] px-[0.2rem] py-[0.1rem] text-xs opacity-90"
-                variant={"red"}
-              >
-                NEW
-              </Badge>
-            </Link> */}
-
+            {userDB?.user?.id && !userDB?.user?.subscribed ? (
+              <ProButton>
+                <Button
+                  className={"flex w-full flex-row items-center gap-2"}
+                  variant={"gold"}
+                >
+                  GO PRO <Crown className="size-4" />
+                </Button>
+              </ProButton>
+            ) : null}
             {pendingVideo ? (
               <Button
-                className="flex flex-row items-center gap-2 border border-red-500/60 bg-red-500/20 hover:bg-red-500/30"
+                className="flex flex-row items-center gap-2 border border-red-500/60 bg-red-500/20"
                 variant={"outline"}
                 onClick={() => {
                   cancelPendingVideoMutation.mutate({
@@ -396,8 +339,8 @@ export default function Home({
               </>
             ) : !user.isLoaded ? (
               <>
-                <Skeleton className="h-[2.4rem] w-[11rem] rounded-lg"></Skeleton>
-                <Skeleton className="h-[2.4rem] w-[11rem] rounded-lg"></Skeleton>
+                <Skeleton className="h-[2.4rem] w-[9.3rem] rounded-lg"></Skeleton>
+                <Skeleton className="h-[2.4rem] w-[9.3rem] rounded-lg"></Skeleton>
               </>
             ) : null}
           </div>
@@ -413,16 +356,16 @@ export default function Home({
           </Link>
           ... I will kiss u fr 😽
         </p> */}
-        <div className="flex flex-col items-center gap-4 py-12">
-          <p className="text-xl font-bold">Recent Generations</p>
-          <div className="flex max-w-[90%] flex-wrap items-center justify-center gap-4 ">
-            <ClientTweetCard className="bg-card/80" id="1787633614835843302" />
-            <ClientTweetCard className="bg-card/80" id="1787434978780819569" />
-            <ClientTweetCard className="bg-card/80" id="1780386464091591078" />
+        <div className="pt-48">
+          <p className="text-center text-3xl font-bold">Recent Generations</p>
+          <div className="mx-auto flex max-w-[80%] flex-col items-center justify-center gap-4 md:max-w-[1200px] md:flex-row md:flex-wrap">
+            <Tweet id="1787633614835843302" />
+            <Tweet id="1787434978780819569" />
+            <Tweet id="1786844526646063208" />
           </div>
         </div>
       </main>
-      {/* <footer className="flex w-screen justify-center border-t border-border bg-secondary px-4 py-4">
+      <footer className="flex w-screen justify-center border-t border-border bg-secondary px-4 py-4">
         <div className="flex w-full items-center justify-between px-[5%] py-1 md:px-[10%]">
           <Image
             src={"https://images.smart.wtf/brainrot.png"}
@@ -440,7 +383,7 @@ export default function Home({
             </Link>
           </div>
         </div>
-      </footer> */}
+      </footer>
     </>
   );
 }

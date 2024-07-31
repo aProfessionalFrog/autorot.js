@@ -28,7 +28,8 @@ import { useRouter } from "next/navigation";
 import { useCreateVideo } from "./usecreatevideo";
 import { useAuth } from "@clerk/nextjs";
 import { trpc } from "@/trpc/client";
-
+//@ts-ignore
+import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
 import { DialogClose, DialogTrigger } from "@radix-ui/react-dialog";
 import {
@@ -38,8 +39,8 @@ import {
 } from "@/components/ui/tooltip";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link";
 import ProButton from "./ProButton";
-import { useGenerationType } from "./usegenerationtype";
 
 export default function CreateVideo({
   visible = false,
@@ -52,17 +53,7 @@ export default function CreateVideo({
 
   const videoStatus = trpc.user.videoStatus.useQuery();
 
-  const {
-    isOpen,
-    setIsOpen,
-    invalidTopic,
-    setInvalidTopic,
-    setVideoInput,
-    videoInput,
-  } = useCreateVideo();
-  const { setIsOpen: setIsGenerationTypeOpen, setVideoDetails } =
-    useGenerationType();
-
+  const [videoInput, setVideoInput] = useState("");
   const [agent, setAgent] = useState<
     {
       name:
@@ -93,6 +84,7 @@ export default function CreateVideo({
   const [assetType, setAssetType] = useState<"AI" | "GOOGLE" | null>(null);
   const [credits, setCredits] = useState(10);
 
+  const [invalidTopic, setInvalidTopic] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [recommendedTopics] = useState<string[]>([
     "Covariance Matrix",
@@ -117,16 +109,95 @@ export default function CreateVideo({
 
   const dbUser = trpc.user.user.useQuery();
 
+  const { isOpen, setIsOpen, setIsInQueue } = useCreateVideo();
+
+  const createVideoMutation = trpc.user.createVideo.useMutation({
+    onSuccess: async (data) => {
+      if (data?.valid) {
+        const uuidVal = uuidv4();
+        await fetch("/api/create", {
+          method: "POST",
+          body: JSON.stringify({
+            userId: dbUser.data?.user?.id,
+            topic:
+              videoInput === ""
+                ? recommendedTopics[recommendedSelect]
+                : videoInput,
+            agent1: agent[0]?.name ?? "JORDAN_PETERSON",
+            agent2: agent[1]?.name ?? "BEN_SHAPIRO",
+            videoId: uuidVal,
+            duration: duration,
+            music: music,
+            background: background,
+            fps: fps,
+            aiGeneratedImages: assetType === "AI" ? true : false,
+            cleanSrt: true,
+            credits: credits,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        setIsOpen(false);
+        setGenerating(false);
+        toast.success("Video is in queue!");
+        setIsInQueue(true);
+      } else {
+        setInvalidTopic(true);
+        setVideoInput("");
+        setGenerating(false);
+      }
+    },
+    onError: (e) => {
+      console.log(e);
+      setGenerating(false);
+    },
+  });
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className=" max-h-[75%] max-w-[90%] rounded-lg xs:max-w-[425px]">
+        {!user.userId && (
+          <div className="absolute bottom-0 left-0 right-0 top-0 z-30 flex items-center justify-center rounded-lg bg-black bg-opacity-60 text-secondary dark:text-primary">
+            <div className="flex flex-col items-center gap-2">
+              <p className="mx-10 text-center text-2xl font-bold">
+                You need to be logged in to create a video!
+              </p>
+              <div className="flex flex-row items-center gap-2">
+                <Button
+                  onClick={() => {
+                    setIsOpen(false);
+                    router.push("/login");
+                  }}
+                >
+                  Login
+                </Button>
+                <Button
+                  variant={"brain"}
+                  onClick={() => {
+                    setIsOpen(false);
+                    router.push("/signup");
+                  }}
+                >
+                  Signup
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+        <div></div>
         <DialogHeader>
           <DialogTitle className="relative ">
+            <h3>Generate Video</h3>
             <XIcon
               className="absolute right-2 top-2 h-4 w-4 cursor-pointer transition-all hover:opacity-80"
               onClick={() => setIsOpen(false)}
             />
           </DialogTitle>
+          <DialogDescription>
+            Generate a video on whatever topic you desire!
+          </DialogDescription>
         </DialogHeader>
         <div>
           <div className="flex items-center gap-1 pb-2">
@@ -191,7 +262,7 @@ export default function CreateVideo({
             <p
               className={`${
                 invalidTopic ? "" : "hidden"
-              } text-base font-bold text-destructive`}
+              } text-sm text-destructive`}
             >
               Not a valid topic
             </p>
@@ -861,7 +932,6 @@ export default function CreateVideo({
                     <div className="absolute z-20 flex h-full w-full items-center justify-center rounded-lg border border-border bg-black/40 text-xl font-bold text-secondary dark:text-primary">
                       <ProButton>
                         <Button
-                          data-action="subscribe"
                           className="flex flex-row items-center gap-2 "
                           variant="brain"
                           size="sm"
@@ -1012,19 +1082,12 @@ export default function CreateVideo({
         </div>
         {user.userId ? (
           <>
-            {/* {(userDB?.credits ?? 0) < credits && (
+            {(userDB?.credits ?? 0) < credits && (
               <p className="flex flex-row items-center gap-1 text-sm text-red-500/80">
-                <ProButton>
-                  <Button
-                    className="p-0 text-left text-red-500/80"
-                    variant={"link"}
-                  >
-                    You have insufficient credits for this generation. to get
-                    more, subscribe
-                  </Button>
-                </ProButton>
+                <AlertTriangle className="size-3" />
+                You have insufficient credits for this generation
               </p>
-            )} */}
+            )}
             {videoStatus.data?.videos !== null && (
               <p className="text-sm text-destructive/60">
                 Error. Please refresh the page.
@@ -1039,27 +1102,21 @@ export default function CreateVideo({
               agent.length !== 2 ||
               (videoInput === "" && recommendedSelect === -1) ||
               generating ||
-              (!!user.userId && videoStatus.data?.videos !== null)
+              videoStatus.data?.videos !== null ||
+              (userDB?.credits ?? 0) < credits
             }
             className="flex items-center gap-2"
             onClick={() => {
-              setIsGenerationTypeOpen(true);
-              setVideoDetails({
-                brainrot: {
-                  title:
-                    (videoInput === ""
-                      ? recommendedTopics[recommendedSelect]
-                      : videoInput) ?? "the future of the world",
-                  agents: agent,
-                  cost: credits,
-                  remainingCredits: userDB?.credits ?? 0,
-                  duration: duration ?? 1,
-                  fps: fps ?? 30,
-                  background: background ?? null,
-                  music: music ?? null,
-                  assetType: assetType ?? null,
-                },
-                math: {},
+              setGenerating(true);
+              createVideoMutation.mutate({
+                title:
+                  (videoInput === ""
+                    ? recommendedTopics[recommendedSelect]
+                    : videoInput) ?? "the future of the world",
+                agent1: agent[0]?.id ?? 0,
+                agent2: agent[1]?.id ?? 1,
+                cost: credits,
+                remainingCredits: userDB?.credits ?? 0,
               });
             }}
           >

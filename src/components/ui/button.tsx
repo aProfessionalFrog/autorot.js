@@ -8,7 +8,6 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        none: "",
         brain:
           " hover:scale-[101%] active:scale-[99%] transition-all border border-primary/20 brain text-secondary dark:text-primary hover:opacity-[80%] hover:text-brain",
 
@@ -23,7 +22,6 @@ const buttonVariants = cva(
         outline:
           " hover:scale-[101%] active:scale-[99%] transition-all border border-primary/20 bg-card/50 hover:bg-accent hover:text-accent-foreground",
         gold: " hover:scale-[101%] active:scale-[99%] transition-all border border-primary/20 gold text-secondary dark:text-primary hover:opacity-[80%] hover:text-gold",
-        red: "hover:scale-[101%] active:scale-[99%] transition-all border border-red-500/20 red bg-red-500 text-secondary dark:text-primary hover:opacity-[80%]",
         secondary:
           "shadow-sm hover:scale-[101%] active:scale-[99%] transition-all bg-accent text-secondary-foreground hover:bg-primary/10 dark:hover:bg-accent/80",
         ghost:
@@ -39,11 +37,11 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-9 px-4 py-2",
-        sm: "h-8 px-3 text-xs",
-        xs: "h-5 px-2 text-xs",
-        lg: "h-10 px-8",
+        sm: "h-8 rounded-md px-3 text-xs",
+        xs: "h-5 rounded-md px-2 text-xs",
+        lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
-        xl: "text-lg h-12 px-8",
+        xl: "text-lg h-12 rounded-md px-8",
       },
     },
     defaultVariants: {

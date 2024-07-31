@@ -125,10 +125,10 @@ export default function YourVideos({ visible = false }: { visible?: boolean }) {
                       <Suspense fallback={<Loader2 className="size-6" />}>
                         <video
                           src={url}
-                          loop
-                          playsInline
+                          className={` rounded-lg shadow-md transition-all`}
+                          width={300}
+                          height={"100%"}
                           controls
-                          className="rounded-xl border shadow-sm"
                         ></video>
                       </Suspense>
                     </div>

@@ -1,2 +1,4 @@
 Flask==3.0.3
 whisper_timestamped==1.15.3
+piper-tts==1.2.0
+#onnxruntime-gpu==1.17.1

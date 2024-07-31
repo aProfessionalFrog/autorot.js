@@ -7,11 +7,17 @@
 
 import { Config } from '@remotion/cli/config';
 import { enableTailwind } from '@remotion/tailwind';
+import os from 'os';
 
 Config.setVideoImageFormat('jpeg');
 Config.setOverwriteOutput(true);
-Config.setConcurrency(8);
-// Config.setChromiumMultiProcessOnLinux(true);
+Config.setConcurrency(os.availableParallelism());
+Config.setAudioBitrate("128k");
+Config.setVideoBitrate("4000k");
+Config.setAudioCodec("aac");
+Config.setCodec("h264");
+Config.setPixelFormat("yuv420p");
+//Config.setChromiumMultiProcessOnLinux(true);
 
 // This template processes the whole audio file on each thread which is heavy.
 Config.overrideWebpackConfig((currentConfiguration) => {

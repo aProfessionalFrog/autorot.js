@@ -29,7 +29,7 @@ const UserButton = () => {
         <Avatar className="border border-border">
           <AvatarImage
             className={`object-cover transition-all`}
-            src={userDB.data?.user?.pfp ?? user.user?.imageUrl}
+            src={user.user?.imageUrl}
           />
           <AvatarFallback>{userDB.data?.user?.name.at(0)}</AvatarFallback>
         </Avatar>

@@ -10,6 +10,7 @@ import {
 	staticFile,
 	useCurrentFrame,
 	useVideoConfig,
+	Video,
 } from 'remotion';
 import { fps, music } from './tmp/context';
 import { PaginatedSubtitles } from './Subtitles';
@@ -129,52 +130,52 @@ const AudioViz: React.FC<{
 	mirrorWave,
 	audioSrc,
 }) => {
-	const frame = useCurrentFrame();
+		const frame = useCurrentFrame();
 
-	const audioData = useAudioData(audioSrc);
+		const audioData = useAudioData(audioSrc);
 
-	if (!audioData) {
-		return null;
-	}
+		if (!audioData) {
+			return null;
+		}
 
-	const frequencyData = visualizeAudio({
-		fps,
-		frame,
-		audioData,
-		numberOfSamples, // Use more samples to get a nicer visualisation
-	});
+		const frequencyData = visualizeAudio({
+			fps,
+			frame,
+			audioData,
+			numberOfSamples, // Use more samples to get a nicer visualisation
+		});
 
-	// Pick the low values because they look nicer than high values
-	// feel free to play around :)
-	const frequencyDataSubset = frequencyData.slice(
-		freqRangeStartIndex,
-		freqRangeStartIndex +
+		// Pick the low values because they look nicer than high values
+		// feel free to play around :)
+		const frequencyDataSubset = frequencyData.slice(
+			freqRangeStartIndex,
+			freqRangeStartIndex +
 			(mirrorWave ? Math.round(waveLinesToDisplay / 2) : waveLinesToDisplay)
-	);
+		);
 
-	const frequencesToDisplay = mirrorWave
-		? [...frequencyDataSubset.slice(1).reverse(), ...frequencyDataSubset]
-		: frequencyDataSubset;
+		const frequencesToDisplay = mirrorWave
+			? [...frequencyDataSubset.slice(1).reverse(), ...frequencyDataSubset]
+			: frequencyDataSubset;
 
-	return (
-		<div className="transition-all audio-viz z-30">
-			{frequencesToDisplay.map((v, i) => {
-				return (
-					<div
-						key={i}
-						className={`z-30 bar `}
-						style={{
-							backgroundColor: waveColor,
-							minWidth: '1px',
-							opacity: 0.5,
-							height: `${500 * Math.sqrt(v)}%`,
-						}}
-					/>
-				);
-			})}
-		</div>
-	);
-};
+		return (
+			<div className="transition-all audio-viz z-30">
+				{frequencesToDisplay.map((v, i) => {
+					return (
+						<div
+							key={i}
+							className={`z-30 bar `}
+							style={{
+								backgroundColor: waveColor,
+								minWidth: '1px',
+								opacity: 0.5,
+								height: `${500 * Math.sqrt(v)}%`,
+							}}
+						/>
+					);
+				})}
+			</div>
+		);
+	};
 
 export const AudiogramComposition: React.FC<AudiogramCompositionSchemaType> = ({
 	subtitlesFileName,
@@ -294,7 +295,7 @@ export const AudiogramComposition: React.FC<AudiogramCompositionSchemaType> = ({
 									/*@ts-ignore */
 									e.target.onerror = null; // Prevent looping if the fallback also fails
 									/*@ts-ignore */
-									e.target.src = '/black.png';
+									e.target.src = 'https://images.smart.wtf/black.png';
 								}}
 								className="w-full h-full"
 							/>
@@ -304,9 +305,8 @@ export const AudiogramComposition: React.FC<AudiogramCompositionSchemaType> = ({
 									width={200}
 									height={200}
 									className="z-30 transition-all rounded-full"
-									src={staticFile(
-										`/${currentAgentName || initialAgentName}.png`
-									)}
+									src={`https://images.smart.wtf/${currentAgentName || initialAgentName
+										}.png`}
 								/>
 
 								<div>
@@ -330,16 +330,6 @@ export const AudiogramComposition: React.FC<AudiogramCompositionSchemaType> = ({
 								src={staticFile(videoFileName)}
 							/>
 							<div
-								className="absolute flex flex-col items-center gap-2 opacity-[65%] z-30 bottom-12 right-12 text-white font-bold text-7xl"
-								style={{
-									textShadow: '4px 4px 0px #000000',
-									WebkitTextStroke: '2px black',
-								}}
-							>
-								brainrotjs
-								<br></br>.com 🧠
-							</div>
-							<div
 								style={{
 									lineHeight: `${subtitlesLineHeight}px`,
 									textShadow: '4px 4px 0px #000000',
@@ -359,14 +349,7 @@ export const AudiogramComposition: React.FC<AudiogramCompositionSchemaType> = ({
 						</div>
 					</div>
 				</Sequence>
-				<Sequence from={durationInFrames - 3 * fps}>
-					<OffthreadVideo
-						startFrom={20}
-						muted
-						className={`absolute -left-[1px] -top-[1px] h-full w-[101%] object-cover z-50 `}
-						src={'https://images.smart.wtf/brainrot.mp4'}
-					/>
-				</Sequence>
+
 			</AbsoluteFill>
 		</div>
 	);

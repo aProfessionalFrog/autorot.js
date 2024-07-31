@@ -1,9 +1,9 @@
 import { db } from "@/server/db";
 import { pendingVideos } from "@/server/db/schemas/users/schema";
 
-export const dynamic = "force-dynamic";
+export async function POST(request: Request) {
+  const body = JSON.parse(await request.text());
 
-async function insertRecordToDB(body: any) {
   await db.insert(pendingVideos).values({
     user_id: body.userId,
     agent1: body.agent1,
@@ -13,7 +13,7 @@ async function insertRecordToDB(body: any) {
     url: "",
     timestamp: new Date(),
     duration: body.duration ?? 1,
-    music: body.music ?? "NONE",
+    music: body.music ?? "WII_SHOP_CHANNEL_TRAP",
     background:
       body.background !== null
         ? body.background
@@ -24,22 +24,10 @@ async function insertRecordToDB(body: any) {
         : "TRUCK",
     fps: body.fps ?? 20,
     aiGeneratedImages: body.aiGeneratedImages,
-    cleanSrt: false,
+    cleanSrt: body.cleanSrt,
     credits: body.credits,
     status: "Waiting in Queue",
   });
-}
 
-export async function POST(request: Request) {
-  try {
-    const body = JSON.parse(await request.text());
-
-    // Insert record into the database
-    await insertRecordToDB(body);
-
-    return new Response(null, { status: 200 });
-  } catch (error) {
-    console.error("Error processing POST request:", error);
-    return new Response("Internal Server Error", { status: 500 });
-  }
+  return new Response(null, { status: 200 });
 }

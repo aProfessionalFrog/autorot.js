@@ -101,7 +101,6 @@ export default function Credits() {
           </div> */}
           {!user?.subscribed ? (
             <Link
-              data-action="subscribe"
               href={"/pricing"}
               className={buttonVariants({
                 className: "flex w-full flex-row items-center gap-2 ",

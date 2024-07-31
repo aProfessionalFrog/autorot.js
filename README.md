@@ -28,18 +28,37 @@ _this is probably the most complex api to get set up, so if you want to be able 
 
 - https://console.groq.com/keys
 
-<h1>Video explaining how to run 👇 locally</h1>
-
-[![Thumbnail](https://github.com/noahgsolomon/brainrot.js/assets/111200060/edab5792-6c04-4355-8e89-dc61ad16cbdf)](https://www.youtube.com/watch?v=-Ff0xG1eNjw)
+https://github.com/noahgsolomon/brainrot.js/assets/111200060/db1e60c4-2db9-48c5-9826-38c7b5112b4b
 
 #### assets to download
 
-I have removed assets for download. If you want your own GTA / Minecraft / etc. bottom half video just find some on youtube.
-
-#### common problems
-
-- FFMPEG is not installed.
-- You don't have the flask python server running (or not on port 5000)
-- Dalle 3 API rate limit exceeded: this is because each dialogue transition has an image, and it is prompted to have 7 dialogue transitions. However, typical tier 1 open ai accounts can only generate 5 images per minute.
-- You don't have folders public/srt and public/voice and src/tmp
-- You have concurrency set too high for your computer (check remotion.config.ts)
+put these assets in generate/background with the same name they have:
+https://brainrotbackground.s3.amazonaws.com/GTA-1.mp4
+https://brainrotbackground.s3.amazonaws.com/GTA-2.mp4
+https://brainrotbackground.s3.amazonaws.com/GTA-3.mp4
+https://brainrotbackground.s3.amazonaws.com/GTA-4.mp4
+https://brainrotbackground.s3.amazonaws.com/GTA-5.mp4
+https://brainrotbackground.s3.amazonaws.com/GTA-6.mp4
+https://brainrotbackground.s3.amazonaws.com/GTA-7.mp4
+https://brainrotbackground.s3.amazonaws.com/GTA-8.mp4
+https://brainrotbackground.s3.amazonaws.com/GTA-9.mp4
+https://brainrotbackground.s3.amazonaws.com/MINECRAFT-0.mp4
+https://brainrotbackground.s3.amazonaws.com/MINECRAFT-1.mp4
+https://brainrotbackground.s3.amazonaws.com/MINECRAFT-2.mp4
+https://brainrotbackground.s3.amazonaws.com/MINECRAFT-3.mp4
+https://brainrotbackground.s3.amazonaws.com/MINECRAFT-4.mp4
+https://brainrotbackground.s3.amazonaws.com/MINECRAFT-5.mp4
+https://brainrotbackground.s3.amazonaws.com/MINECRAFT-6.mp4
+https://brainrotbackground.s3.amazonaws.com/MINECRAFT-7.mp4
+https://brainrotbackground.s3.amazonaws.com/MINECRAFT-8.mp4
+https://brainrotbackground.s3.amazonaws.com/MINECRAFT-9.mp4
+https://brainrotbackground.s3.amazonaws.com/TRUCK-0.mp4
+https://brainrotbackground.s3.amazonaws.com/TRUCK-1.mp4
+https://brainrotbackground.s3.amazonaws.com/TRUCK-2.mp4
+https://brainrotbackground.s3.amazonaws.com/TRUCK-3.mp4
+https://brainrotbackground.s3.amazonaws.com/TRUCK-4.mp4
+https://brainrotbackground.s3.amazonaws.com/TRUCK-5.mp4
+https://brainrotbackground.s3.amazonaws.com/TRUCK-6.mp4
+https://brainrotbackground.s3.amazonaws.com/TRUCK-7.mp4
+https://brainrotbackground.s3.amazonaws.com/TRUCK-8.mp4
+https://brainrotbackground.s3.amazonaws.com/TRUCK-9.mp4

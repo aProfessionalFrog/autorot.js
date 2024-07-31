@@ -1,9 +1,13 @@
 import fetch from 'node-fetch';
-import fs from 'fs';
+import fs, { existsSync, readdirSync } from 'fs';
 import dotenv from 'dotenv';
 import transcriptFunction from './transcript.mjs';
 import { writeFile } from 'fs/promises';
 import { query } from './dbClient.mjs';
+import Groq from 'groq-sdk/index.mjs';
+import exec from 'await-exec'; // single-threaded voice generation
+//import { exec } from 'child_process'; // multi-threaded voice generation
+
 
 dotenv.config();
 
@@ -11,6 +15,10 @@ import OpenAI from 'openai';
 
 const openai = new OpenAI({
 	apiKey: process.env.OPENAI_API_KEY,
+});
+
+const groq = new Groq({
+	apiKey: process.env.GROQ_API_KEY,
 });
 
 export async function generateTranscriptAudio(
@@ -62,26 +70,25 @@ export async function generateTranscriptAudio(
 		const person = transcript[i].person;
 		const line = transcript[i].line;
 
-		const voice_id =
-			person === 'JOE_ROGAN'
-				? process.env.JOE_ROGAN_VOICE_ID
-				: person === 'BARACK_OBAMA'
-				? process.env.BARACK_OBAMA_VOICE_ID
-				: person === 'BEN_SHAPIRO'
-				? process.env.BEN_SHAPIRO_VOICE_ID
-				: person === 'RICK_SANCHEZ'
-				? process.env.RICK_SANCHEZ_VOICE_ID
-				: person === 'DONALD_TRUMP'
-				? process.env.DONALD_TRUMP_VOICE_ID
-				: person === 'MARK_ZUCKERBERG'
-				? process.env.MARK_ZUCKERBERG_VOICE_ID
-				: person === 'JOE_BIDEN'
-				? process.env.JOE_BIDEN_VOICE_ID
-				: person === 'LIL_YACHTY'
-				? process.env.LIL_YACHTY_VOICE_ID
-				: process.env.JORDAN_PETERSON_VOICE_ID;
-
-		await generateAudio(voice_id, person, line, i);
+		//await generateAudio(voice_id, person, line, i);
+		await generateAudio(person, line, i);
+		audios.push({
+			person: person,
+			audio: `public/voice/${person}-${i}.mp3`,
+			index: i,
+			image:
+				ai && duration === 1
+					? images[i].imageUrl
+					: images[i]?.link || 'https://images.smart.wtf/black.png',
+		});
+		console.log(readdirSync('public/voice'))
+	}
+	/*const folder = [];
+	for (let i = 0; i < transcript.length; i++) {
+		const person = transcript[i].person;
+		const line = transcript[i].line;
+		await generateAudio(person, line, i);
+		folder.push(person + "-" + i + ".mp3");
 		audios.push({
 			person: person,
 			audio: `public/voice/${person}-${i}.mp3`,
@@ -92,30 +99,38 @@ export async function generateTranscriptAudio(
 					: images[i]?.link || 'https://images.smart.wtf/black.png',
 		});
 	}
+	while (JSON.stringify(folder.sort()) != JSON.stringify(readdirSync('public/voice').sort())) {
+
+	}
+	console.log("done")*/
+
+	//await generateAudio(voice_id, person, line, i);
+
 
 	const initialAgentName = audios[0].person;
+
+
+	// PAY ATTENTION TO THIS
+
+	const videoIndex = Math.floor(Math.random() * fs.readdirSync('public/background').filter((element) => element.startsWith(background + '-')).length) + 1;
 
 	const contextContent = `
 import { staticFile } from 'remotion';
 
-export const music: string = ${
-		music === 'NONE' ? `'NONE'` : `'/music/${music}.MP3'`
-	};
+export const music: string = '/music/${music}.MP3';
 export const fps = ${fps};
 export const initialAgentName = '${initialAgentName}';
-export const videoFileName = '/background/${background}-' + ${Math.floor(
-		Math.random() * 10
-	)} + '.mp4';
+export const videoFileName = 'background/${background}-' + ${videoIndex} + '.mp4';
 export const subtitlesFileName = [
   ${audios
-		.map(
-			(entry, i) => `{
+			.map(
+				(entry, i) => `{
     name: '${entry.person}',
     file: staticFile('srt/${entry.person}-${i}.srt'),
     asset: '${entry.image}',
   }`
-		)
-		.join(',\n  ')}
+			)
+			.join(',\n  ')}
 ];
 `;
 
@@ -124,7 +139,12 @@ export const subtitlesFileName = [
 	return { audios, transcript };
 }
 
-export async function generateAudio(voice_id, person, line, index) {
+export async function generateAudio(person, line, index) {
+	//await exec(`echo '${line}' | piper --model public/voices/${person}.onnx --output_file public/voice/${person}-${index}.mp3`);
+	await exec(`echo "${line}" | piper --model voices/obama.onnx --output_file public/voice/${person}-${index}.mp3`);
+}
+
+/*export async function generateAudio(voice_id, person, line, index) {
 	const response = await fetch(
 		`https://api.elevenlabs.io/v1/text-to-speech/${voice_id}`,
 		{
@@ -159,9 +179,14 @@ export async function generateAudio(voice_id, person, line, index) {
 		});
 		audioStream.on('error', reject);
 	});
-}
+}*/
 
 async function fetchValidImages(transcript, length, ai, duration) {
+
+	const images = [];
+	images.push({ link: 'https://images.smart.wtf/black.png' });
+	return images;
+
 	if (ai && duration === 1) {
 		const promises = [];
 
@@ -178,8 +203,7 @@ async function fetchValidImages(transcript, length, ai, duration) {
 			const imageFetch = await fetch(
 				`https://www.googleapis.com/customsearch/v1?q=${encodeURI(
 					transcript[i].asset
-				)}&cx=${process.env.GOOGLE_CX}&searchType=image&key=${
-					process.env.GOOGLE_API_KEY
+				)}&cx=${process.env.GOOGLE_CX}&searchType=image&key=${process.env.GOOGLE_API_KEY
 				}&num=${4}`,
 				{
 					method: 'GET',
@@ -248,7 +272,7 @@ async function checkImageHeaders(url) {
 
 const imagePrompt = async (title) => {
 	try {
-		const response = await openai.chat.completions.create({
+		/*const response = await openai.chat.completions.create({
 			model: 'ft:gpt-3.5-turbo-1106:personal::8TEhcfKm',
 			messages: [
 				{
@@ -256,9 +280,24 @@ const imagePrompt = async (title) => {
 					content: title,
 				},
 			],
+		});*/
+		const completion = await groq.chat.completions.create({
+			messages: [
+				{
+					role: 'system',
+					content: title,
+				}
+			],
+			model: 'llama3-8b-8192',
+			temperature: 0.5,
+			max_tokens: 4096,
+			top_p: 1,
+			stop: null,
+			stream: false,
 		});
+		return completion.choices[0]?.message.content;
 
-		return response.choices[0]?.message.content;
+		//return response.choices[0]?.message.content;
 	} catch (error) {
 		console.error('Error fetching data:', error);
 	}
