@@ -81,7 +81,7 @@ export async function generateTranscriptAudio(
 					? images[i].imageUrl
 					: images[i]?.link || 'https://images.smart.wtf/black.png',
 		});
-		console.log(readdirSync('public/voice'))
+		//console.log(readdirSync('public/voice'))
 	}
 	/*const folder = [];
 	for (let i = 0; i < transcript.length; i++) {

@@ -29,12 +29,12 @@ export async function generateCleanSrt(transcript, srt) {
 }
 
 async function cleanSrt(transcript, srt, i) {
-
+	console.log(srt);
 	const completion = await groq.chat.completions.create({
 		messages: [
 			{
 				role: 'system',
-				content: `The first item I will give you is the correct text, and the next will be the SRT generated from this text which is not totally accurate. Sometimes the srt files just doesn't have words so if this is the case add the missing words to the SRT file which are present in the transcript. Based on the accurate transcript, and the possibly inaccurate SRT file, return the SRT text corrected for inaccurate spelling and such. Make sure you keep the format and the times the same.
+				content: `The first item I will give you is the correct text, and the next will be the SRT generated from this text which is not totally accurate. Sometimes the srt files just doesn't have words so if this is the case add the missing words to the SRT file which are present in the transcript. Based on the accurate transcript, and the possibly inaccurate SRT file, return the SRT text corrected for inaccurate spelling and such. Make sure you keep the format and the times the same. Do not add any extra dialog or notes, and just respond with a valid srt file. Do not explain the changes that you made, as your response is converted directly into an srt file.
                             
                             transcript: 
                             ${transcript}
@@ -43,7 +43,7 @@ async function cleanSrt(transcript, srt, i) {
                             ${srt}`,
 			}
 		],
-		model: 'llama3-8b-8192',
+		model: 'llama3-70b-8192',
 		temperature: 0.5,
 		max_tokens: 4096,
 		top_p: 1,
@@ -51,6 +51,8 @@ async function cleanSrt(transcript, srt, i) {
 		stream: false,
 	});
 	const content = completion.choices[0].message.content;
+	console.log(content);
+	return { content, i };
 
 	/*const completion = await openai.chat.completions.create({
 		messages: [
@@ -69,5 +71,4 @@ async function cleanSrt(transcript, srt, i) {
 	});
 
 	const content = completion.choices[0].message.content;*/
-	return { content, i };
 }
